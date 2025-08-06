@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - Como obter API do Google</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-gray-800 text-white p-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Tutorial - Google Custom Search API</h1>
+            <a href="/" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition">
+                ← Voltar
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-8">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Como obter sua API do Google - Passo a Passo</h2>
+            
+            <!-- Passo 1 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">1</span>
+                    Criar um Projeto no Google Cloud
+                </h3>
+                <div class="ml-11 space-y-3">
+                    <p class="text-gray-700">Acesse o Google Cloud Console:</p>
+                    <a href="https://console.cloud.google.com" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        console.cloud.google.com
+                    </a>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600">
+                        <li>Clique em "Selecionar projeto" no topo da página</li>
+                        <li>Clique em "Novo Projeto"</li>
+                        <li>Dê um nome ao projeto (ex: "SiloOrganizer")</li>
+                        <li>Clique em "Criar"</li>
+                    </ol>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-3">
+                        <p class="text-sm text-yellow-800">
+                            <strong>Nota:</strong> Se for sua primeira vez, você precisará aceitar os termos e pode precisar adicionar informações de cobrança (não será cobrado para uso básico).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo 2 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">2</span>
+                    Ativar a API Custom Search
+                </h3>
+                <div class="ml-11 space-y-3">
+                    <p class="text-gray-700">Com o projeto selecionado:</p>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600">
+                        <li>No menu lateral, clique em "APIs e Serviços" → "Biblioteca"</li>
+                        <li>Na barra de pesquisa, digite "Custom Search API"</li>
+                        <li>Clique no resultado "Custom Search API"</li>
+                        <li>Clique no botão azul "ATIVAR"</li>
+                        <li>Aguarde a ativação (cerca de 10 segundos)</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Passo 3 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">3</span>
+                    Criar uma Chave de API
+                </h3>
+                <div class="ml-11 space-y-3">
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600">
+                        <li>No menu lateral, vá em "APIs e Serviços" → "Credenciais"</li>
+                        <li>Clique em "+ CRIAR CREDENCIAIS" no topo</li>
+                        <li>Selecione "Chave de API"</li>
+                        <li>Uma nova chave será criada e exibida</li>
+                        <li><strong class="text-gray-800">COPIE E GUARDE esta chave!</strong> Você usará ela no SiloOrganizer</li>
+                    </ol>
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mt-3">
+                        <p class="text-sm text-green-800">
+                            <strong>Dica:</strong> A chave se parece com isso: AIzaSyBsL7xxxxxx
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo 4 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <span class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">4</span>
+                    Criar um Mecanismo de Pesquisa Personalizado
+                </h3>
+                <div class="ml-11 space-y-3">
+                    <p class="text-gray-700">Agora vamos criar o mecanismo de busca:</p>
+                    <a href="https://programmablesearchengine.google.com/controlpanel/create" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium mb-3">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        Criar Mecanismo de Pesquisa
+                    </a>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600">
+                        <li>Em "Sites para pesquisar", digite: <code class="bg-gray-100 px-2 py-1 rounded">*.com.br</code></li>
+                        <li>Em "Idioma", selecione "Português (Brasil)"</li>
+                        <li>Dê um nome (ex: "SiloOrganizer Brasil")</li>
+                        <li>Clique em "Criar"</li>
+                        <li>Na próxima tela, clique em "Personalizar"</li>
+                        <li>Ative a opção "Pesquisar em toda a web"</li>
+                        <li>Clique em "Configurações" → "Básico"</li>
+                        <li><strong class="text-gray-800">COPIE o "ID do mecanismo de pesquisa"</strong></li>
+                    </ol>
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mt-3">
+                        <p class="text-sm text-green-800">
+                            <strong>Dica:</strong> O ID se parece com isso: c11b37b2xxxxx
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo 5 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <span class="bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3">5</span>
+                    Pronto! Configure suas credenciais
+                </h3>
+                <div class="ml-11 space-y-3">
+                    <p class="text-gray-700">Agora você tem tudo que precisa:</p>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <ul class="space-y-2">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <strong>API Key:</strong> Cole a chave da API do Google que você criou no passo 3
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <strong>CSE ID:</strong> Cole o ID do mecanismo de pesquisa do passo 4
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="/" class="inline-block w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition text-center">
+                        Voltar e Configurar Agora
+                    </a>
+                </div>
+            </div>
+
+            <!-- Informações Adicionais -->
+            <div class="border-t pt-6">
+                <h4 class="font-semibold text-gray-800 mb-3">Perguntas Frequentes</h4>
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-medium text-gray-700">É gratuito?</p>
+                        <p class="text-gray-600 text-sm">Sim! O Google oferece 100 buscas gratuitas por dia. Perfeito para uso pessoal e pequenos projetos.</p>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-700">Preciso colocar cartão de crédito?</p>
+                        <p class="text-gray-600 text-sm">O Google pode pedir, mas não cobrará nada se você ficar dentro do limite gratuito.</p>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-700">Posso usar para buscar em qualquer site?</p>
+                        <p class="text-gray-600 text-sm">Sim! Ao ativar "Pesquisar em toda a web" no passo 4, você pode buscar em qualquer site.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
