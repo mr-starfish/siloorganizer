@@ -11,6 +11,8 @@ const { groupSimilarKeywords } = require('./api/groupingLogic');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
 
 dotenv.config();
 
@@ -48,6 +50,8 @@ const upload = multer({
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '1mb' })); // Ajuste o limite conforme a necessidade real do aplicativo
+app.use(cookieParser());
+app.use(csrf({ cookie: true }));
 app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
@@ -70,6 +74,10 @@ app.use(
     max: 100
   })
 );
+
+app.get('/api/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
 function isKeywordSafe(str) {
   return (
@@ -247,13 +255,16 @@ app.use((err, req, res, next) => {
   if (err.message === 'INVALID_FILE_TYPE') {
     return res.status(400).json({ error: 'Formato de arquivo inválido' });
   }
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ error: 'Token CSRF inválido' });
+  }
   next(err);
 });
 
 // Socket.IO para comunicação em tempo real
 io.on('connection', (socket) => {
   console.log('Cliente conectado');
-  
+
   socket.on('disconnect', () => {
     console.log('Cliente desconectado');
   });
