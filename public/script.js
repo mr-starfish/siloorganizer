@@ -10,9 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressCounter = document.getElementById('progress-counter');
     const progressPercent = document.getElementById('progress-percent');
     let currentGroups = null;
+    let csrfToken = '';
+
+    async function fetchCsrfToken() {
+        const res = await fetch('/api/csrf-token');
+        const data = await res.json();
+        csrfToken = data.csrfToken;
+    }
     
     // Conectar ao Socket.IO
     const socket = io();
+
+    fetchCsrfToken();
     
     socket.on('connect', () => {
         console.log('Conectado ao servidor');
@@ -46,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
+        await fetchCsrfToken();
+
         const file = fileInput.files[0];
 
         if (!file) {
@@ -64,6 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/agrupar', {
                 method: 'POST',
+                headers: {
+                    'CSRF-Token': csrfToken
+                },
                 body: formData
             });
 
@@ -430,10 +444,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            await fetchCsrfToken();
             const response = await fetch('/api/exportar', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken
                 },
                 body: JSON.stringify({ groups: currentGroups })
             });
