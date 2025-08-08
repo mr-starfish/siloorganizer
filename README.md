@@ -11,9 +11,9 @@ Ferramenta para análise de canibalização de palavras-chave, agrupando keyword
 npm install
 ```
 
-3. Configure o arquivo `.env` (opcional):
+3. Configure o arquivo `.env` com suas credenciais do Google:
    - Copie `.env.example` para `.env`
-   - Adicione sua chave da RapidAPI se desejar usar a API paga
+   - Defina `GOOGLE_API_KEY` e `GOOGLE_CSE_ID`
 
 ## Uso
 
@@ -36,13 +36,11 @@ exemplo palavra 1,1000
 exemplo palavra 2,500
 ```
 
-5. Selecione a API desejada (Google gratuita ou RapidAPI paga)
+5. Clique em "Analisar" e aguarde o processamento
 
-6. Clique em "Analisar" e aguarde o processamento
+6. Visualize os grupos de palavras canibalizadas
 
-7. Visualize os grupos de palavras canibalizadas
-
-8. Exporte os resultados para CSV
+7. Exporte os resultados para CSV
 
 ## Estrutura do Projeto
 
@@ -75,7 +73,6 @@ SiloOrganizer/
 - Agrupamento automático (80% de similaridade)
 - Destaque da palavra principal de cada grupo
 - Exportação dos resultados para CSV
-- Suporte a APIs gratuitas e pagas
 
 ## Tecnologias Utilizadas
 
