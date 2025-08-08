@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         loadingSpinner.classList.remove('hidden');
         submitButton.disabled = true;
-        resultsArea.innerHTML = '';
+        resultsArea.textContent = '';
 
         try {
             const response = await fetch('/api/agrupar', {
@@ -100,10 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function renderResults(data) {
-        resultsArea.innerHTML = '';
-        
+        resultsArea.textContent = '';
+
         if (!data.keywords || data.keywords.length === 0) {
-            resultsArea.innerHTML = '<p class="text-gray-500 text-center">Nenhuma palavra-chave encontrada.</p>';
+            const noKeywords = document.createElement('p');
+            noKeywords.className = 'text-gray-500 text-center';
+            noKeywords.textContent = 'Nenhuma palavra-chave encontrada.';
+            resultsArea.appendChild(noKeywords);
             return;
         }
 
@@ -112,10 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const header = document.createElement('div');
         header.className = 'mb-4';
-        header.innerHTML = `
-            <h2 class="text-xl font-bold text-gray-800">Resultados da Análise</h2>
-            <p class="text-gray-600">Total de palavras-chave: ${data.keywordCount}</p>
-        `;
+        const headerTitle = document.createElement('h2');
+        headerTitle.className = 'text-xl font-bold text-gray-800';
+        headerTitle.textContent = 'Resultados da Análise';
+        const headerCount = document.createElement('p');
+        headerCount.className = 'text-gray-600';
+        headerCount.textContent = `Total de palavras-chave: ${data.keywordCount}`;
+        header.appendChild(headerTitle);
+        header.appendChild(headerCount);
         resultsContainer.appendChild(header);
 
         const groups = groupKeywords(data.keywords);
@@ -179,6 +186,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function isValidProtocol(url) {
+        try {
+            const parsed = new URL(url, window.location.href);
+            return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch {
+            return false;
+        }
+    }
+
     function createGroupCard(group, groupNumber) {
         const card = document.createElement('div');
         card.className = 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm';
@@ -201,25 +217,60 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (index === 0) {
                 keywordHeader.className += ' bg-blue-50 border-blue-200';
-                keywordHeader.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center flex-1">
-                            <svg class="w-5 h-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
-                            <span class="font-medium text-gray-800">${keyword.text}</span>
-                            <span class="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">Principal</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-gray-600 font-medium">${keyword.volume.toLocaleString()}</span>
-                            <button class="serp-toggle text-gray-500 hover:text-gray-700 p-1">
-                                <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                `;
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'flex justify-between items-center';
+
+                const leftContainer = document.createElement('div');
+                leftContainer.className = 'flex items-center flex-1';
+
+                const starSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                starSvg.setAttribute('class', 'w-5 h-5 text-yellow-500 mr-2');
+                starSvg.setAttribute('fill', 'currentColor');
+                starSvg.setAttribute('viewBox', '0 0 20 20');
+                const starPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                starPath.setAttribute('d', 'M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z');
+                starSvg.appendChild(starPath);
+                leftContainer.appendChild(starSvg);
+
+                const keywordSpan = document.createElement('span');
+                keywordSpan.className = 'font-medium text-gray-800';
+                keywordSpan.textContent = keyword.text;
+                leftContainer.appendChild(keywordSpan);
+
+                const principalSpan = document.createElement('span');
+                principalSpan.className = 'ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded';
+                principalSpan.textContent = 'Principal';
+                leftContainer.appendChild(principalSpan);
+
+                const rightContainer = document.createElement('div');
+                rightContainer.className = 'flex items-center space-x-3';
+
+                const volumeSpan = document.createElement('span');
+                volumeSpan.className = 'text-gray-600 font-medium';
+                volumeSpan.textContent = keyword.volume.toLocaleString();
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'serp-toggle text-gray-500 hover:text-gray-700 p-1';
+                const chevronSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                chevronSvg.setAttribute('class', 'w-5 h-5 transform transition-transform');
+                chevronSvg.setAttribute('fill', 'none');
+                chevronSvg.setAttribute('stroke', 'currentColor');
+                chevronSvg.setAttribute('viewBox', '0 0 24 24');
+                const chevronPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                chevronPath.setAttribute('stroke-linecap', 'round');
+                chevronPath.setAttribute('stroke-linejoin', 'round');
+                chevronPath.setAttribute('stroke-width', '2');
+                chevronPath.setAttribute('d', 'M19 9l-7 7-7-7');
+                chevronSvg.appendChild(chevronPath);
+                toggleBtn.appendChild(chevronSvg);
+
+                rightContainer.appendChild(volumeSpan);
+                rightContainer.appendChild(toggleBtn);
+
+                headerContainer.appendChild(leftContainer);
+                headerContainer.appendChild(rightContainer);
+
+                keywordHeader.appendChild(headerContainer);
             } else {
                 // Definir cor baseada na similaridade
                 let similarityColor = 'text-green-600';
@@ -233,24 +284,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     bgColor = 'bg-red-50';
                 }
                 
-                keywordHeader.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center flex-1">
-                            <span class="text-gray-700">${keyword.text}</span>
-                            <span class="ml-2 text-xs ${bgColor} ${similarityColor} px-2 py-1 rounded font-semibold">
-                                ${keyword.similarity}% similar
-                            </span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-gray-500">${keyword.volume.toLocaleString()}</span>
-                            <button class="serp-toggle text-gray-500 hover:text-gray-700 p-1">
-                                <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                `;
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'flex justify-between items-center';
+
+                const leftContainer = document.createElement('div');
+                leftContainer.className = 'flex items-center flex-1';
+                const keywordSpan = document.createElement('span');
+                keywordSpan.className = 'text-gray-700';
+                keywordSpan.textContent = keyword.text;
+                const similaritySpan = document.createElement('span');
+                similaritySpan.className = `ml-2 text-xs ${bgColor} ${similarityColor} px-2 py-1 rounded font-semibold`;
+                similaritySpan.textContent = `${keyword.similarity}% similar`;
+                leftContainer.appendChild(keywordSpan);
+                leftContainer.appendChild(similaritySpan);
+
+                const rightContainer = document.createElement('div');
+                rightContainer.className = 'flex items-center space-x-3';
+                const volumeSpan = document.createElement('span');
+                volumeSpan.className = 'text-gray-500';
+                volumeSpan.textContent = keyword.volume.toLocaleString();
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'serp-toggle text-gray-500 hover:text-gray-700 p-1';
+                const chevronSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                chevronSvg.setAttribute('class', 'w-5 h-5 transform transition-transform');
+                chevronSvg.setAttribute('fill', 'none');
+                chevronSvg.setAttribute('stroke', 'currentColor');
+                chevronSvg.setAttribute('viewBox', '0 0 24 24');
+                const chevronPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                chevronPath.setAttribute('stroke-linecap', 'round');
+                chevronPath.setAttribute('stroke-linejoin', 'round');
+                chevronPath.setAttribute('stroke-width', '2');
+                chevronPath.setAttribute('d', 'M19 9l-7 7-7-7');
+                chevronSvg.appendChild(chevronPath);
+                toggleBtn.appendChild(chevronSvg);
+                rightContainer.appendChild(volumeSpan);
+                rightContainer.appendChild(toggleBtn);
+
+                headerContainer.appendChild(leftContainer);
+                headerContainer.appendChild(rightContainer);
+
+                keywordHeader.appendChild(headerContainer);
             }
             
             // SERPs container (inicialmente oculto)
@@ -264,31 +337,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 commonUrls = keyword.serps.filter(url => principalUrls.has(normalizeUrlForComparison(url)));
             }
             
-            serpsContainer.innerHTML = `
-                ${index > 0 && commonUrls.length > 0 ? `
-                    <div class="mb-3 p-2 bg-blue-50 rounded text-xs">
-                        <span class="font-semibold text-blue-700">URLs em comum com a principal:</span>
-                        <span class="text-blue-600 ml-1">${commonUrls.length} de 7 (${Math.round((commonUrls.length/7)*100)}%)</span>
-                    </div>
-                ` : ''}
-                <div class="text-xs font-semibold text-gray-600 mb-2">Top 7 resultados de busca:</div>
-                <ol class="text-xs space-y-1">
-                    ${(keyword.serps || []).map((url, idx) => {
-                        const isCommon = index > 0 && commonUrls.some(commonUrl => 
-                            normalizeUrlForComparison(commonUrl) === normalizeUrlForComparison(url)
-                        );
-                        return `
-                            <li class="flex items-start ${isCommon ? 'bg-green-50 p-1 rounded' : ''}">
-                                <span class="text-gray-500 mr-2">${idx + 1}.</span>
-                                <a href="${url}" target="_blank" class="text-blue-600 hover:text-blue-800 truncate flex-1" title="${url}">
-                                    ${isCommon ? '✓ ' : ''}${url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                                </a>
-                            </li>
-                        `;
-                    }).join('')}
-                </ol>
-                ${keyword.serps && keyword.serps.length === 0 ? '<p class="text-gray-500 text-xs italic">Nenhum resultado encontrado</p>' : ''}
-            `;
+            if (index > 0 && commonUrls.length > 0) {
+                const commonDiv = document.createElement('div');
+                commonDiv.className = 'mb-3 p-2 bg-blue-50 rounded text-xs';
+                const commonLabel = document.createElement('span');
+                commonLabel.className = 'font-semibold text-blue-700';
+                commonLabel.textContent = 'URLs em comum com a principal:';
+                const commonInfo = document.createElement('span');
+                commonInfo.className = 'text-blue-600 ml-1';
+                commonInfo.textContent = `${commonUrls.length} de 7 (${Math.round((commonUrls.length/7)*100)}%)`;
+                commonDiv.appendChild(commonLabel);
+                commonDiv.appendChild(commonInfo);
+                serpsContainer.appendChild(commonDiv);
+            }
+
+            const serpsTitle = document.createElement('div');
+            serpsTitle.className = 'text-xs font-semibold text-gray-600 mb-2';
+            serpsTitle.textContent = 'Top 7 resultados de busca:';
+            serpsContainer.appendChild(serpsTitle);
+
+            const serpsList = document.createElement('ol');
+            serpsList.className = 'text-xs space-y-1';
+            (keyword.serps || []).forEach((url, idx) => {
+                const isCommon = index > 0 && commonUrls.some(commonUrl =>
+                    normalizeUrlForComparison(commonUrl) === normalizeUrlForComparison(url)
+                );
+                const item = document.createElement('li');
+                item.className = 'flex items-start' + (isCommon ? ' bg-green-50 p-1 rounded' : '');
+                const indexSpan = document.createElement('span');
+                indexSpan.className = 'text-gray-500 mr-2';
+                indexSpan.textContent = `${idx + 1}.`;
+                const link = document.createElement('a');
+                link.className = 'text-blue-600 hover:text-blue-800 truncate flex-1';
+                link.target = '_blank';
+                link.title = url;
+                if (isValidProtocol(url)) {
+                    link.href = url;
+                }
+                const displayUrl = url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+                link.textContent = (isCommon ? '✓ ' : '') + displayUrl;
+                item.appendChild(indexSpan);
+                item.appendChild(link);
+                serpsList.appendChild(item);
+            });
+            serpsContainer.appendChild(serpsList);
+            if (keyword.serps && keyword.serps.length === 0) {
+                const noResults = document.createElement('p');
+                noResults.className = 'text-gray-500 text-xs italic';
+                noResults.textContent = 'Nenhum resultado encontrado';
+                serpsContainer.appendChild(noResults);
+            }
             
             // Adicionar evento de toggle
             const toggleBtn = keywordHeader.querySelector('.serp-toggle');
@@ -310,12 +408,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderError(message) {
-        resultsArea.innerHTML = `
-            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                <p class="font-bold">Erro</p>
-                <p>${message}</p>
-            </div>
-        `;
+        resultsArea.textContent = '';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded';
+        const boldP = document.createElement('p');
+        boldP.className = 'font-bold';
+        boldP.textContent = 'Erro';
+        const messageP = document.createElement('p');
+        messageP.textContent = message;
+        errorDiv.appendChild(boldP);
+        errorDiv.appendChild(messageP);
+        resultsArea.appendChild(errorDiv);
         currentGroups = null;
         exportButton.disabled = true;
     }
@@ -342,7 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
+            if (isValidProtocol(url) || url.startsWith('blob:')) {
+                link.href = url;
+            }
             link.download = 'keywords_agrupadas.csv';
             document.body.appendChild(link);
             link.click();
