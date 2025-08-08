@@ -16,7 +16,20 @@ const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    const isCsv =
+      file.mimetype === 'text/csv' &&
+      path.extname(file.originalname).toLowerCase() === '.csv';
+    if (isCsv) {
+      cb(null, true);
+    } else {
+      cb(new Error('INVALID_FILE_TYPE'));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -169,6 +182,16 @@ app.post('/api/exportar', (req, res) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="keywords_agrupadas.csv"');
   res.status(200).send('\ufeff' + csvContent);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ error: 'Arquivo excede o tamanho máximo permitido' });
+  }
+  if (err.message === 'INVALID_FILE_TYPE') {
+    return res.status(400).json({ error: 'Formato de arquivo inválido' });
+  }
+  next(err);
 });
 
 // Socket.IO para comunicação em tempo real
