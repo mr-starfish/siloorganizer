@@ -12,59 +12,6 @@
     </header>
 
     <main class="max-w-4xl mx-auto p-8">
-        <!-- Área de Configuração de API -->
-        <div id="api-config-section" class="bg-white shadow-md rounded-lg p-6 mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">Configuração de APIs</h2>
-                <a href="/tutorial.html" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded transition flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Tutorial: Como obter API do Google
-                </a>
-            </div>
-            
-            <div class="bg-gray-50 border rounded-lg p-4">
-                <h3 class="font-medium text-gray-700 mb-3 flex items-center">
-                    <img src="https://www.google.com/favicon.ico" class="w-4 h-4 mr-2">
-                    Google Custom Search API
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-sm text-gray-600 mb-1 block">API Key</label>
-                        <input 
-                            type="text" 
-                            id="google-api-key" 
-                            placeholder="Cole sua API Key do Google aqui"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600 mb-1 block">CSE ID (ID do Mecanismo de Pesquisa)</label>
-                        <input 
-                            type="text" 
-                            id="google-cse-id" 
-                            placeholder="Cole seu CSE ID aqui"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                    </div>
-                </div>
-                <div id="google-api-status" class="text-sm mt-3 p-2 rounded bg-white">
-                    <span class="text-gray-500">Status: Não configurado</span>
-                </div>
-                <div class="mt-3 text-xs text-gray-600">
-                    <p>🇧🇷 As buscas serão feitas no Google Brasil (pt-BR)</p>
-                    <p>🆓 100 pesquisas gratuitas por dia</p>
-                </div>
-            </div>
-            
-            <div class="mt-4 flex justify-end">
-                <button id="save-apis-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
-                    Salvar Configurações
-                </button>
-            </div>
-        </div>
-
         <form id="upload-form" class="bg-white shadow-md rounded-lg p-6 mb-8">
             <div class="mb-6">
                 <label for="keyword-file" class="block text-gray-700 text-sm font-bold mb-2">
@@ -109,7 +56,7 @@
                     </div>
                 </div>
                 <div class="mt-2 text-center">
-                    <p id="rate-limit-info" class="text-xs text-gray-500">Taxa: Aguardando seleção de API...</p>
+                    <p id="rate-limit-info" class="text-xs text-gray-500">Taxa: Google Custom Search API - 1 requisição/segundo (1s de intervalo)</p>
                 </div>
             </div>
         </div>

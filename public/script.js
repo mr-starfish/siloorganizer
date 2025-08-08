@@ -11,84 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressPercent = document.getElementById('progress-percent');
     let currentGroups = null;
     
-    // Elementos de configuração de API
-    const saveApisBtn = document.getElementById('save-apis-btn');
-    const googleApiKey = document.getElementById('google-api-key');
-    const googleCseId = document.getElementById('google-cse-id');
-    const googleApiStatus = document.getElementById('google-api-status');
-    
-    // Carregar APIs salvas do localStorage
-    function loadSavedApis() {
-        const savedGoogleKey = localStorage.getItem('google_api_key');
-        const savedGoogleCse = localStorage.getItem('google_cse_id');
-        
-        if (savedGoogleKey) {
-            googleApiKey.value = savedGoogleKey;
-            if (savedGoogleCse) {
-                googleCseId.value = savedGoogleCse;
-                googleApiStatus.innerHTML = '<span class="text-green-600 font-medium">✓ Configurado e pronto para usar!</span>';
-            } else {
-                googleApiStatus.innerHTML = '<span class="text-yellow-600">⚠ Falta configurar o CSE ID</span>';
-            }
-        }
-    }
-    
-    // Salvar APIs no localStorage
-    saveApisBtn.addEventListener('click', () => {
-        const googleKey = googleApiKey.value.trim();
-        const googleCse = googleCseId.value.trim();
-        
-        let message = '';
-        let messageType = 'success';
-        
-        if (googleKey && googleCse) {
-            localStorage.setItem('google_api_key', googleKey);
-            localStorage.setItem('google_cse_id', googleCse);
-            googleApiStatus.innerHTML = '<span class="text-green-600 font-medium">✓ Configurado com sucesso! Pronto para usar.</span>';
-            message = '✓ Configurações salvas!';
-        } else if (googleKey && !googleCse) {
-            localStorage.setItem('google_api_key', googleKey);
-            googleApiStatus.innerHTML = '<span class="text-yellow-600">⚠ Falta configurar o CSE ID</span>';
-            message = '⚠ Falta o CSE ID';
-            messageType = 'warning';
-        } else if (!googleKey && googleCse) {
-            localStorage.setItem('google_cse_id', googleCse);
-            googleApiStatus.innerHTML = '<span class="text-yellow-600">⚠ Falta configurar a API Key</span>';
-            message = '⚠ Falta a API Key';
-            messageType = 'warning';
-        } else {
-            // Limpar configuração se ambos os campos estiverem vazios
-            localStorage.removeItem('google_api_key');
-            localStorage.removeItem('google_cse_id');
-            googleApiStatus.innerHTML = '<span class="text-gray-500">Status: Não configurado</span>';
-            message = '⚠ Nenhuma configuração fornecida';
-            messageType = 'warning';
-        }
-        
-        // Mostrar mensagem de feedback
-        const originalText = saveApisBtn.textContent;
-        saveApisBtn.textContent = message;
-        
-        if (messageType === 'success') {
-            saveApisBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
-            saveApisBtn.classList.add('bg-green-600');
-        } else {
-            saveApisBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
-            saveApisBtn.classList.add('bg-yellow-500');
-        }
-        
-        setTimeout(() => {
-            saveApisBtn.textContent = originalText;
-            saveApisBtn.classList.add('bg-green-500', 'hover:bg-green-600');
-            saveApisBtn.classList.remove('bg-green-600', 'bg-yellow-500');
-        }, 2000);
-    });
-    
-    // Código do tutorial removido - agora temos uma página separada
-    
-    // Carregar APIs ao iniciar
-    loadSavedApis();
-    
     // Conectar ao Socket.IO
     const socket = io();
     
@@ -131,25 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Verificar se a API do Google está configurada
-        const googleKey = localStorage.getItem('google_api_key');
-        const googleCse = localStorage.getItem('google_cse_id');
-        if (!googleKey || !googleCse) {
-            alert('Por favor, configure a API do Google primeiro.\n\nClique no botão "Tutorial: Como obter API do Google" para aprender como fazer isso.');
-            if (!googleKey) {
-                googleApiKey.focus();
-            } else {
-                googleCseId.focus();
-            }
-            return;
-        }
-
         const formData = new FormData();
         formData.append('keywordFile', file);
-        formData.append('apiProvider', 'google'); // Sempre usar Google agora
         formData.append('socketId', socket.id);
-        formData.append('googleApiKey', googleKey);
-        formData.append('googleCseId', googleCse);
 
         loadingSpinner.classList.remove('hidden');
         submitButton.disabled = true;

@@ -5,24 +5,23 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function fetchSerpResults(keyword, apiProvider = 'google', index = 0, total = 0, frontendCredentials = {}) {
+async function fetchSerpResults(keyword, apiProvider = 'google', index = 0, total = 0) {
     try {
         // Adiciona delay para respeitar rate limit do Google (100 requisições por 100 segundos)
         if (index > 0) {
             console.log(`⏳ Aguardando 1 segundo antes da próxima requisição (${index}/${total})...`);
             await delay(1000);
         }
-        return await fetchGoogleResults(keyword, index, total, frontendCredentials);
+        return await fetchGoogleResults(keyword, index, total);
     } catch (error) {
         console.error(`Erro ao buscar resultados para "${keyword}":`, error.message);
         return [];
     }
 }
 
-async function fetchGoogleResults(keyword, index = 0, total = 0, frontendCredentials = {}) {
-    // Usar credenciais do frontend se fornecidas, senão usar do .env
-    const apiKey = frontendCredentials.googleApiKey || process.env.GOOGLE_API_KEY;
-    const cseId = frontendCredentials.googleCseId || process.env.GOOGLE_CSE_ID;
+async function fetchGoogleResults(keyword, index = 0, total = 0) {
+    const apiKey = process.env.GOOGLE_API_KEY;
+    const cseId = process.env.GOOGLE_CSE_ID;
     
     if (!apiKey || !cseId) {
         console.warn('GOOGLE_API_KEY ou GOOGLE_CSE_ID não configuradas, usando resultados simulados');

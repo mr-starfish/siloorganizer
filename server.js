@@ -41,12 +41,6 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
 
   const socketId = req.body.socketId; // Receber socketId do cliente
   
-  // Receber credenciais do Google do frontend
-  const frontendCredentials = {
-    googleApiKey: req.body.googleApiKey,
-    googleCseId: req.body.googleCseId
-  };
-  
   const results = [];
   
   fs.createReadStream(req.file.path)
@@ -92,7 +86,7 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
             });
           }
           
-          const serps = await fetchSerpResults(keywordText, 'google', i + 1, results.length, frontendCredentials);
+          const serps = await fetchSerpResults(keywordText, 'google', i + 1, results.length);
           
           keywordsWithSerps.push({
             keyword: keywordText,
