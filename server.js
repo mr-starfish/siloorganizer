@@ -45,7 +45,7 @@ const upload = multer({
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' })); // Ajuste o limite conforme a necessidade real do aplicativo
 app.use(helmet());
 
 app.use(cors({
