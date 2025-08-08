@@ -150,18 +150,27 @@ app.post('/api/exportar', (req, res) => {
   if (!groups || !Array.isArray(groups)) {
     return res.status(400).json({ error: 'Dados inválidos para exportação' });
   }
-  
+
+  const sanitize = (value) => {
+    if (typeof value !== 'string') return value;
+    const trimmed = value.trimStart();
+    return /^[=+\-@]/.test(trimmed) ? `'${trimmed}` : trimmed;
+  };
+
   let csvContent = 'Keyword Principal,Variações Canibalizadas\n';
-  
+
   groups.forEach(group => {
     const keywords = group.keywords || [];
     if (keywords.length > 0) {
-      const principal = keywords[0]['Palavra-Chave'] || '';
-      const variacoes = keywords.slice(1).map(k => k['Palavra-Chave']).join(',');
-      
+      const principal = sanitize(keywords[0]['Palavra-Chave'] || '');
+      const variacoes = keywords
+        .slice(1)
+        .map(k => sanitize(k['Palavra-Chave']))
+        .join(',');
+
       const principalEscaped = principal.includes(',') ? `"${principal}"` : principal;
       const variacoesEscaped = variacoes.includes(',') ? `"${variacoes}"` : variacoes;
-      
+
       csvContent += `${principalEscaped},${variacoesEscaped}\n`;
     }
   });
