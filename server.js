@@ -10,12 +10,23 @@ const { fetchSerpResults } = require('./api/searchClient');
 const { groupSimilarKeywords } = require('./api/groupingLogic');
 const helmet = require('helmet');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 dotenv.config();
 
 const app = express();
+app.disable('x-powered-by');
 const server = http.createServer(app);
-const io = new Server(server);
+
+const allowedOrigins = ['http://localhost:3000'];
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST']
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 
 const upload = multer({
@@ -37,12 +48,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(helmet());
 
-const allowedOrigins = ['http://localhost:3000'];
-
 app.use(cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST']
 }));
+
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+  })
+);
+
+function isKeywordSafe(str) {
+  return (
+    typeof str === 'string' &&
+    /^[\wÀ-ÿ \-,.?!]+$/.test(str) &&
+    str.length < 100
+  );
+}
 
 app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
   if (!req.file) {
@@ -60,7 +84,13 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
     })
     .on('end', async () => {
       fs.unlinkSync(req.file.path);
-      
+
+      if (results.length > 1000) {
+        return res
+          .status(400)
+          .json({ error: 'Arquivo CSV muito grande (máx 1000 linhas)' });
+      }
+
       try {
         console.log(`\n🚀 Iniciando processamento de ${results.length} palavras-chave com Google API`);
         console.log('━'.repeat(50));
@@ -80,12 +110,16 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
         
         // Processar sequencialmente para evitar rate limiting
         const keywordsWithSerps = [];
-        
+
         for (let i = 0; i < results.length; i++) {
           const keyword = results[i];
           const keywordText = keyword['Palavra-Chave'] || keyword.keyword || Object.values(keyword)[0];
           const volume = keyword['Volume'] || keyword.volume || '0';
-          
+
+          if (!isKeywordSafe(keywordText)) {
+            continue;
+          }
+
           // Enviar atualização antes de buscar
           if (socketId) {
             io.to(socketId).emit('progress', {
