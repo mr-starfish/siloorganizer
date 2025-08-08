@@ -76,6 +76,9 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
   }
 
   const socketId = req.body.socketId; // Receber socketId do cliente
+  if (socketId && !io.sockets.sockets.has(socketId)) {
+    return res.status(400).json({ error: 'Socket ID inválido' });
+  }
   
   const results = [];
   
@@ -101,7 +104,7 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
         const estimatedTime = Math.ceil(results.length / 60);
         
         // Enviar atualização inicial
-        if (socketId) {
+        if (socketId && io.sockets.sockets.has(socketId)) {
           io.to(socketId).emit('progress', {
             message: `Iniciando análise de ${results.length} palavras-chave... (Tempo estimado: ~${estimatedTime} minuto${estimatedTime > 1 ? 's' : ''})`,
             progress: 0,
@@ -123,7 +126,7 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
           }
 
           // Enviar atualização antes de buscar
-          if (socketId) {
+          if (socketId && io.sockets.sockets.has(socketId)) {
             io.to(socketId).emit('progress', {
               message: `[${i + 1}/${results.length}] Analisando: "${keywordText}"`,
               progress: Math.round((i / results.length) * 100),
@@ -145,7 +148,7 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
           console.log(`📊 Progresso: ${progress}% (${i + 1}/${results.length})`);
           
           // Enviar atualização após buscar
-          if (socketId) {
+          if (socketId && io.sockets.sockets.has(socketId)) {
             io.to(socketId).emit('progress', {
               message: `✓ Concluído: "${keywordText}"`,
               progress: progress,
@@ -159,7 +162,7 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
         console.log('✅ Processamento concluído!');
         
         // Enviar atualização de agrupamento
-        if (socketId) {
+        if (socketId && io.sockets.sockets.has(socketId)) {
           io.to(socketId).emit('progress', {
             message: 'Agrupando palavras-chave similares...',
             progress: 100
