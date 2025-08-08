@@ -47,6 +47,15 @@ const upload = multer({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com']
+    }
+  })
+);
 
 app.use(cors({
   origin: allowedOrigins,
