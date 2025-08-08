@@ -2,8 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const dotenv = require('dotenv');
 const csv = require('csv-parser');
-const fs = require('fs');
 const path = require('path');
+const { Readable } = require('stream');
 const http = require('http');
 const { Server } = require('socket.io');
 const { fetchSerpResults } = require('./api/searchClient');
@@ -32,7 +32,7 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 3000;
 
 const upload = multer({
-  dest: 'uploads/',
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const isCsv =
       file.mimetype === 'text/csv' &&
@@ -81,15 +81,13 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
   }
   
   const results = [];
-  
-  fs.createReadStream(req.file.path)
+
+  Readable.from([req.file.buffer])
     .pipe(csv())
     .on('data', (data) => {
       results.push(data);
     })
     .on('end', async () => {
-      fs.unlinkSync(req.file.path);
-
       if (results.length > 1000) {
         return res
           .status(400)
@@ -192,10 +190,7 @@ app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
         res.status(500).json({ error: 'Erro ao processar as palavras-chave' });
       }
     })
-    .on('error', (err) => {
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
+    .on('error', () => {
       res.status(500).json({ error: 'Erro ao processar o arquivo CSV' });
     });
 });
