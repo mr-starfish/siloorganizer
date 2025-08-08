@@ -8,6 +8,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { fetchSerpResults } = require('./api/searchClient');
 const { groupSimilarKeywords } = require('./api/groupingLogic');
+const helmet = require('helmet');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -20,6 +22,14 @@ const upload = multer({ dest: 'uploads/' });
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+app.use(helmet());
+
+const allowedOrigins = ['http://localhost:3000'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST']
+}));
 
 app.post('/api/agrupar', upload.single('keywordFile'), async (req, res) => {
   if (!req.file) {
